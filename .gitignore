@@ -1,3 +1,9 @@
+*.bin
+*.velf
+*.sfo
+*.elf
+*.o
+
 # Windows thumbnail cache files
 Thumbs.db
 ehthumbs.db
