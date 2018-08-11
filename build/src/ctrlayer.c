@@ -35,6 +35,8 @@ uint16_t *joydead, *joysatur;
 
 vita2d_texture *fb_texture;
 
+int _newlib_heap_size_user = 192 * 1024 * 1024;
+
 int main(int argc, char **argv){
 
 	scePowerSetArmClockFrequency(444);
@@ -195,7 +197,7 @@ void uninitinput(void)
 
 static const char *joynames[13] =
 {
-    "A", "B", "X", "Y", "L", "R", "ZL", "ZR", "T1", "T2", "T3", "T4", "T5"
+    "Cross", "Circle", "Square", "Triangle", "L", "R", "Unused", "Unused", "T1", "T2", "T3", "T4", "T5"
 };
 
 const char *getjoyname(int32_t what, int32_t num)
