@@ -11480,7 +11480,7 @@ int32_t app_main(int32_t argc, const char **argv)
     }
     else
 #endif
-    OSD_SetLogFile("eduke32.log");
+    OSD_SetLogFile("ux0:data/EDuke32/eduke32.log");
 
     OSD_SetFunctions(
         GAME_drawosdchar,
@@ -11857,15 +11857,15 @@ int32_t app_main(int32_t argc, const char **argv)
 
     char *ptr = Xstrdup(setupfilename), *p = strtok(ptr, ".");
 
-    if (!Bstrcmp(setupfilename, SETUPFILENAME))
-        Bsprintf(tempbuf, "settings.cfg");
-    else
-        Bsprintf(tempbuf, "%s_settings.cfg", p);
+    //if (!Bstrcmp(setupfilename, SETUPFILENAME))
+        Bsprintf(tempbuf, "ux0:data/EDuke32/settings.cfg");
+    //else
+    //    Bsprintf(tempbuf, "%s_settings.cfg", p);
 
     OSD_Exec(tempbuf);
     Bfree(ptr);
 
-    OSD_Exec("autoexec.cfg");
+    OSD_Exec("ux0:data/EDuke32/autoexec.cfg");
 
     M_Init();
 
