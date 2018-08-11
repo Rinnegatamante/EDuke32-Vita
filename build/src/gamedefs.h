@@ -43,7 +43,7 @@ extern "C" {
 //
 // Setup program defines
 //
-#define SETUPFILENAME "eduke32.cfg"
+#define SETUPFILENAME "ux0:data/EDuke32/eduke32.cfg"
 
 // Number of JOY buttons
 // KEEPINSYNC source/jmact/_control.h, build/src/sdlayer.c
