@@ -200,6 +200,11 @@ static const char *joynames[13] =
     "Cross", "Circle", "Square", "Triangle", "L", "R", "Unused", "Unused", "T1", "T2", "T3", "T4", "T5"
 };
 
+static const char *hatnames[1] =
+{
+	"DPad"
+};
+
 const char *getjoyname(int32_t what, int32_t num)
 {
     static char tmp[64];
@@ -220,8 +225,7 @@ const char *getjoyname(int32_t what, int32_t num)
         case 2:  // hat
             if ((unsigned)num > (unsigned)joynumhats)
                 return NULL;
-            Bsprintf(tmp, "Hat %d", num);
-            return (char *)tmp;
+            return hatnames[num];
 
         default: return NULL;
     }

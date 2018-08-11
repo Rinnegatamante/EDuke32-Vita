@@ -1534,7 +1534,7 @@ void M_Init(void)
         }
         else
         {
-            Bsnprintf(MenuJoystickNames[i], MAXJOYBUTTONSTRINGLENGTH, (i & 1) ? "Double Hat %d %s" : "Hat %d %s", ((i - 2*joynumbuttons)>>3), MenuJoystickHatDirections[((i - 2*joynumbuttons)>>1) % 4]);
+            Bsnprintf(MenuJoystickNames[i], MAXJOYBUTTONSTRINGLENGTH, (i & 1) ? "Double DPad %s" : "DPad %s", MenuJoystickHatDirections[((i - 2*joynumbuttons)>>1) % 4]);
         }
 
         MEL_JOYSTICKBTNS[i] = &ME_JOYSTICKBTNS[i];
@@ -2958,11 +2958,11 @@ static void M_MenuEntryStringActivate(/*MenuEntry_t *entry*/)
     {
     case MENU_SAVE:
         if (!save_xxh)
-            #ifdef _3DS
+            //#ifdef _3DS
             save_xxh = 1; //Dirty, dirty hack...
-            #else
-            save_xxh = XXH32((uint8_t *)&ud.savegame[M_SAVE.currentEntry][0], 19, 0xDEADBEEF);
-            #endif
+            //#else
+            //save_xxh = XXH32((uint8_t *)&ud.savegame[M_SAVE.currentEntry][0], 19, 0xDEADBEEF);
+            //#endif
         if (ud.savegame[M_SAVE.currentEntry][0])
             M_ChangeMenu(MENU_SAVEVERIFY);
         break;
