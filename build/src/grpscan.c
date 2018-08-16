@@ -242,7 +242,7 @@ static void FreeGameList(void)
 }
 
 
-#define GRPCACHEFILE "grpfiles.cache"
+#define GRPCACHEFILE "ux0:data/EDuke32/grpfiles.cache"
 static struct grpcache
 {
     struct grpcache *next;

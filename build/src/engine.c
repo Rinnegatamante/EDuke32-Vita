@@ -12187,9 +12187,9 @@ int32_t loadpics(const char *filename, int32_t askedsize)
 
     Bmemset(gotpic, 0, sizeof(gotpic));
 
-    #ifdef _3DS
+    //#ifdef _3DS
         cachesize = 4 * 1024 * 1024;
-    #else
+    /*#else
 
     //cachesize = min((int32_t)((Bgetsysmemsize()/100)*60),max(artsize,askedsize));
     if (Bgetsysmemsize() <= (uint32_t)askedsize)
@@ -12197,7 +12197,7 @@ int32_t loadpics(const char *filename, int32_t askedsize)
     else
         cachesize = askedsize;
 
-    #endif
+    #endif*/
 
     // NOTE: this doesn't make a lot of sense on modern OSs...
     while ((pic = Bmalloc(cachesize)) == NULL)
