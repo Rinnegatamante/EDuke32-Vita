@@ -132,7 +132,13 @@ EDUKE32_STATIC_ASSERT(7 <= MAXTILES-MAXUSERTILES);
 #include "_rts.h"
 #include "rts.h"
 #include "soundsdyn.h"
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include "music.h"
+#ifdef __cplusplus
+};
+#endif
 #include "player.h"
 #include "actors.h"
 #include "quotes.h"

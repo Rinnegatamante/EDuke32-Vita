@@ -8,7 +8,8 @@ LIBS = -lvita2d -lvorbisfile -lvorbis -logg  -lspeexdsp -lmpg123 \
 	-lc -lSceCommonDialog_stub -lSceAudio_stub -lSceLibKernel_stub \
 	-lSceNet_stub -lSceNetCtl_stub -lpng -lz -lSceDisplay_stub -lSceGxm_stub -lSceHid_stub \
 	-lSceSysmodule_stub -lSceCtrl_stub -lSceTouch_stub -lSceMotion_stub -lm -lSceAppMgr_stub \
-	-lSceAppUtil_stub -lScePgf_stub -ljpeg -lSceRtc_stub -lScePower_stub -lSDL_mixer -lSDL -lvitaGL -lmikmod
+	-lSceAppUtil_stub -lScePgf_stub -ljpeg -lSceRtc_stub -lScePower_stub -lSDL_mixer -lSDL -lvitaGL -lmikmod \
+	-lspeexdsp
 
 BUILD_SRC = \
 	build/src/a-c.c \
@@ -64,8 +65,14 @@ GAME_SRC=build/src/game.c \
 	build/src/grpscan.c \
 	build/src/sounds.c \
 	build/src/soundsdyn.c \
-  	build/src/rev.c \
-  	build/src/ctrmusic.c
+  	build/src/rev.c
+	
+MUSIC_SRC=build/src/audiodec/psp2music.cpp \
+	build/src/audiodec/audio_decoder.cpp \
+	build/src/audiodec/audio_resampler.cpp \
+	build/src/audiodec/decoder_fmmidi.cpp \
+	build/src/audiodec/midisequencer.cpp \
+	build/src/audiodec/midisynth.cpp
 
 JMACT_SRC=build/src/jmact/file_lib.c \
 	build/src/jmact/control.c \
@@ -89,7 +96,7 @@ JAUDIO_SRC= build/src/jaudiolib/src/drivers.c \
 	build/src/jaudiolib/src/driver_sdl.c    
     
 CFILES   := $(BUILD_SRC) $(GAME_SRC) $(JMACT_SRC) $(JAUDIO_SRC)
-CPPFILES   := 
+CPPFILES   := $(MUSIC_SRC)
 BINFILES := $(foreach dir,$(DATA), $(wildcard $(dir)/*.bin))
 OBJS     := $(addsuffix .o,$(BINFILES)) $(CFILES:.c=.o) $(CPPFILES:.cpp=.o)
 
@@ -99,7 +106,8 @@ PREFIX  = arm-vita-eabi
 CC      = $(PREFIX)-gcc
 CXX      = $(PREFIX)-g++
 CFLAGS  = $(INCLUDE) -D__PSP2__ -DNOASM -std=c99 -DNETCODE_DISABLE \
-        -DHAVE_VORBIS -mfpu=neon -mcpu=cortex-a9 -Wl,-q -O2 -g
+        -DHAVE_VORBIS -mfpu=neon -mcpu=cortex-a9 -Wl,-q -O2 -g \
+		-DWANT_FMMIDI=1 -DUSE_AUDIO_RESAMPLER -DHAVE_LIBSPEEXDSP
 CXXFLAGS  = $(CFLAGS) -fno-exceptions -std=gnu++11
 ASFLAGS = $(CFLAGS)
 

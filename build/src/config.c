@@ -222,7 +222,7 @@ void CONFIG_SetDefaults(void)
 #elif defined __ANDROID__
     ud.config.MixRate = droidinfo.audio_sample_rate;
 #else
-    ud.config.MixRate = 44100;
+    ud.config.MixRate = 48000;
 #endif
     ud.config.MouseBias = 0;
     ud.config.MouseDeadZone = 0;
