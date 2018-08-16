@@ -3,6 +3,7 @@
 *.sfo
 *.elf
 *.o
+*.vpk
 
 # Windows thumbnail cache files
 Thumbs.db
