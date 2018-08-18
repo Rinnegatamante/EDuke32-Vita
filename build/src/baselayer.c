@@ -8,6 +8,8 @@
 #include "a.h"
 #include "polymost.h"
 
+#include <vitasdk.h>
+
 // input
 char inputdevices=0;
 char keystatus[KEYSTATUSSIZ], keyfifo[KEYFIFOSIZ], keyasciififo[KEYFIFOSIZ];
@@ -97,6 +99,12 @@ void SetKey(int32_t key, int32_t state)
 //
 char bgetchar(void)
 {
+	SceCtrlData pad;
+	sceCtrlPeekBufferPositive(0, &pad, 1);
+	if (pad.buttons & SCE_CTRL_START){
+		return 13;
+	}
+	
     if (keyasciififoplc == keyasciififoend)
         return 0;
 

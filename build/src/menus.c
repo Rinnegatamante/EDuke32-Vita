@@ -2981,13 +2981,13 @@ static int32_t M_MenuEntryStringSubmit(MenuEntry_t *entry, char *input)
     {
     case MENU_SAVE:
         // dirty hack... char 127 in last position indicates an auto-filled name
-#ifdef __ANDROID__
+//#ifdef __ANDROID__
         if (1)
-#else
+/*#else
         if (input[0] == 0 || (ud.savegame[M_SAVE.currentEntry][MAXSAVEGAMENAME-2] == 127 &&
             Bstrncmp(&ud.savegame[M_SAVE.currentEntry][0], input, MAXSAVEGAMENAME-3) == 0 &&
             save_xxh == XXH32((uint8_t *)&ud.savegame[M_SAVE.currentEntry][0], MAXSAVEGAMENAME-3, 0xDEADBEEF)))
-#endif
+#endif*/
         {
             Bstrncpy(&ud.savegame[M_SAVE.currentEntry][0], MapInfo[ud.volume_number * MAXLEVELS + ud.level_number].name, MAXSAVEGAMENAME-3);
             ud.savegame[M_SAVE.currentEntry][MAXSAVEGAMENAME-2] = 127;
@@ -4438,7 +4438,7 @@ static int32_t M_RunMenu_MenuMenu(Menu_t *cm, MenuMenu_t *menu, MenuEntry_t *cur
                         }
 
 #ifndef EDUKE32_TOUCH_DEVICES
-                        if (!m_mousecaught && mousepressstate == Mouse_Released && M_MouseWithinBounds(&m_mousepos, mousex, mousey, mousewidth, h) && M_MouseWithinBounds(&m_mousedownpos, mousex, mousey, mousewidth, h))
+                        //if (!m_mousecaught && mousepressstate == Mouse_Released && M_MouseWithinBounds(&m_mousepos, mousex, mousey, mousewidth, h) && M_MouseWithinBounds(&m_mousedownpos, mousex, mousey, mousewidth, h))
 #endif
                         {
                             if (entry == currentry && object->editfield != NULL)
