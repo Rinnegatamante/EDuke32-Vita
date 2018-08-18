@@ -33,7 +33,7 @@ int32_t lockcount=0;
 // Joystick dead and saturation zones
 uint16_t *joydead, *joysatur;
 
-vita2d_texture *fb_texture;
+vita2d_texture *fb_texture, *gpu_texture;
 
 int _newlib_heap_size_user = 192 * 1024 * 1024;
 
@@ -45,9 +45,11 @@ int main(int argc, char **argv){
 	scePowerSetGpuXbarClockFrequency(166);
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG_WIDE);
 	vita2d_init();
+	vita2d_set_vblank_wait(0);
 	
+	gpu_texture = vita2d_create_empty_texture_format(960, 544, SCE_GXM_TEXTURE_FORMAT_P8_1BGR);
+	vita2d_texture_set_alloc_memblock_type(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW);
 	fb_texture = vita2d_create_empty_texture_format(960, 544, SCE_GXM_TEXTURE_FORMAT_P8_1BGR);
-	//vita2d_texture_set_alloc_memblock_type(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW);
 	
 	framebuffer = vita2d_texture_get_datap(fb_texture);
 
@@ -59,7 +61,7 @@ int main(int argc, char **argv){
 }
 
 //
-// initsystem() -- init 3DS systems
+// initsystem() -- init PSVITA systems
 //
 int32_t initsystem(void)
 {
@@ -69,7 +71,7 @@ int32_t initsystem(void)
 
 
 //
-// uninitsystem() -- uninit 3DS systems
+// uninitsystem() -- uninit PSVITA systems
 //
 void uninitsystem(void)
 {
@@ -655,8 +657,9 @@ void showframe(int32_t w)
 	if (offscreenrendering) return;
 	int x,y;
 
+	memcpy(vita2d_texture_get_datap(gpu_texture),vita2d_texture_get_datap(fb_texture),vita2d_texture_get_stride(gpu_texture)*vita2d_texture_get_height(gpu_texture));
 	vita2d_start_drawing();
-	vita2d_draw_texture(fb_texture, 0, 0);
+	vita2d_draw_texture(gpu_texture, 0, 0);
 	vita2d_end_drawing();
 	vita2d_wait_rendering_done();
 	vita2d_swap_buffers();
@@ -766,11 +769,13 @@ int32_t setpalette(int32_t start, int32_t num)
 	uint8_t *pal = curpalettefaded;
 	uint8_t r, g, b;
 	uint32_t* palette_tbl = vita2d_texture_get_palette(fb_texture);
+	uint32_t* palette_tbl2 = vita2d_texture_get_palette(gpu_texture);
 	for(i=0; i<256; i++){
 		r = pal[0];
 		g = pal[1];
 		b = pal[2];
 		palette_tbl[i] = r | (g << 8) | (b << 16) | (0xFF << 24);
+		palette_tbl2[i] = r | (g << 8) | (b << 16) | (0xFF << 24);
 		pal += 4;
 	}
 
