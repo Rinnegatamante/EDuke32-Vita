@@ -12188,7 +12188,7 @@ int32_t loadpics(const char *filename, int32_t askedsize)
     Bmemset(gotpic, 0, sizeof(gotpic));
 
     //#ifdef _3DS
-        cachesize = 4 * 1024 * 1024;
+        cachesize = 50 * 1024 * 1024;
     /*#else
 
     //cachesize = min((int32_t)((Bgetsysmemsize()/100)*60),max(artsize,askedsize));
