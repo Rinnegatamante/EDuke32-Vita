@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "input.h"
 #include "menus.h"
 
+#include <vitasdk.h>
+
 int32_t I_CheckAllInput(void)
 {
     return (
@@ -52,10 +54,16 @@ void I_ClearAllInput(void)
     JOYSTICK_ClearAllButtons();
 }
 
+uint32_t oldbuttons = 0;
+uint32_t oldbuttons2 = 0;
+uint32_t SCE_CTRL_CONFIRM;
+uint32_t SCE_CTRL_CANCEL;
 
 int32_t I_AdvanceTrigger(void)
 {
-    return (
+	SceCtrlData pad;
+	sceCtrlPeekBufferPositive(0, &pad, 1);
+    /*return (
             KB_KeyPressed(sc_kpad_Enter) ||
             KB_KeyPressed(sc_Enter) ||
 #if !defined EDUKE32_TOUCH_DEVICES
@@ -71,7 +79,11 @@ int32_t I_AdvanceTrigger(void)
             BUTTON(gamefunc_Fire)
 # endif
 #endif
-            );
+            );*/
+			
+	int32_t result = ((pad.buttons & SCE_CTRL_CONFIRM) == SCE_CTRL_CONFIRM) && (!((oldbuttons & SCE_CTRL_CONFIRM) == SCE_CTRL_CONFIRM));
+	oldbuttons = pad.buttons;
+	return result;
 }
 
 void I_AdvanceTriggerClear(void)
@@ -90,14 +102,19 @@ void I_AdvanceTriggerClear(void)
 
 int32_t I_ReturnTrigger(void)
 {
-    return (
+	SceCtrlData pad;
+	sceCtrlPeekBufferPositive(0, &pad, 1);
+    /*return (
             KB_KeyPressed(sc_Escape) ||
             (MOUSE_GetButtons()&RIGHT_MOUSE) ||
             BUTTON(gamefunc_Crouch)
 #if defined(GEKKO)
             || (JOYSTICK_GetButtons()&(WII_B|WII_HOME))
 #endif
-            );
+            );*/
+	int32_t result = ((pad.buttons & SCE_CTRL_CANCEL) == SCE_CTRL_CANCEL) && (!((oldbuttons2 & SCE_CTRL_CANCEL) == SCE_CTRL_CANCEL));
+	oldbuttons2 = pad.buttons;
+	return result;
 }
 
 void I_ReturnTriggerClear(void)

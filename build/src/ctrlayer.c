@@ -37,7 +37,21 @@ vita2d_texture *fb_texture, *gpu_texture;
 
 int _newlib_heap_size_user = 192 * 1024 * 1024;
 
+extern uint32_t SCE_CTRL_CONFIRM;
+extern uint32_t SCE_CTRL_CANCEL;
+
 int main(int argc, char **argv){
+	
+	SceAppUtilInitParam appUtilParam;
+	SceAppUtilBootParam appUtilBootParam;
+	memset(&appUtilParam, 0, sizeof(SceAppUtilInitParam));
+	memset(&appUtilBootParam, 0, sizeof(SceAppUtilBootParam));
+	sceAppUtilInit(&appUtilParam, &appUtilBootParam);
+	int enterButton;
+	sceAppUtilSystemParamGetInt(SCE_SYSTEM_PARAM_ID_ENTER_BUTTON, &enterButton);
+	
+	SCE_CTRL_CONFIRM = (enterButton == 0) ? SCE_CTRL_CIRCLE : SCE_CTRL_CROSS;
+	SCE_CTRL_CANCEL = (enterButton == 0) ? SCE_CTRL_CROSS : SCE_CTRL_CIRCLE;
 
 	scePowerSetArmClockFrequency(444);
 	scePowerSetBusClockFrequency(222);
