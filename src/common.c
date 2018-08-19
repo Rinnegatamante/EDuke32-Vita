@@ -286,12 +286,6 @@ void G_InitMultiPsky(int32_t const CLOUDYOCEAN__DYN, int32_t const MOONSKY1__DYN
     citysky->tileofs[6] = 2;
     citysky->tileofs[7] = 3;
 
-#if 0
-    // This assertion should hold. See note above.
-    for (int i=0; i<pskynummultis; ++i)
-        for (int j=0; j<(1<<multipsky[i].lognumtiles); ++j)
-            Bassert(multipsky[i].tileofs[j] <= PSKYOFF_MAX);
-#endif
 }
 
 void G_SetupGlobalPsky(void)

@@ -1,8 +1,7 @@
 TARGET		:= EDuke32
 TITLE		:= EDUKE0032
-GIT_VERSION := $(shell git describe --abbrev=6 --dirty --always --tags)
 
-INCLUDES := build/include build/src build/src/jmact build/src/jaudiolib/include build/src/enet/include
+INCLUDES := include src src/jmact src/jaudiolib/include src/enet/include
 
 LIBS = -lvita2d -lvorbisfile -lvorbis -logg  -lspeexdsp -lmpg123 \
 	-lc -lSceCommonDialog_stub -lSceAudio_stub -lSceLibKernel_stub \
@@ -12,88 +11,88 @@ LIBS = -lvita2d -lvorbisfile -lvorbis -logg  -lspeexdsp -lmpg123 \
 	-lspeexdsp
 
 BUILD_SRC = \
-	build/src/a-c.c \
-	build/src/baselayer.c \
-	build/src/cache1d.c \
-	build/src/compat.c \
-	build/src/common.c \
-	build/src/crc32.c \
-	build/src/defs.c \
-	build/src/colmatch.c \
-	build/src/engine.c \
-	build/src/mdsprite.c \
-	build/src/texcache.c \
-	build/src/dxtfilter.c \
-	build/src/hightile.c \
-	build/src/textfont.c \
-	build/src/smalltextfont.c \
-	build/src/kplib.c \
-	build/src/mmulti_null.c \
-	build/src/lz4.c \
-	build/src/osd.c \
-	build/src/md4.c \
-	build/src/pragmas.c \
-	build/src/scriptfile.c \
-	build/src/mutex.c \
-	build/src/xxhash.c \
-	build/src/voxmodel.c \
-	build/src/psp2layer.c
+	src/a-c.c \
+	src/baselayer.c \
+	src/cache1d.c \
+	src/compat.c \
+	src/common.c \
+	src/crc32.c \
+	src/defs.c \
+	src/colmatch.c \
+	src/engine.c \
+	src/mdsprite.c \
+	src/texcache.c \
+	src/dxtfilter.c \
+	src/hightile.c \
+	src/textfont.c \
+	src/smalltextfont.c \
+	src/kplib.c \
+	src/mmulti_null.c \
+	src/lz4.c \
+	src/osd.c \
+	src/md4.c \
+	src/pragmas.c \
+	src/scriptfile.c \
+	src/mutex.c \
+	src/xxhash.c \
+	src/voxmodel.c \
+	src/psp2layer.c
 
-GAME_SRC=build/src/game.c \
-	build/src/actors.c \
-	build/src/anim.c \
-	build/src/animsounds.c \
-	build/src/animvpx.c \
-	build/src/common.c \
-	build/src/config.c \
-	build/src/demo.c \
-	build/src/gamedef.c \
-	build/src/gameexec.c \
-	build/src/gamevars.c \
-	build/src/global.c \
-	build/src/input.c \
-	build/src/menus.c \
-	build/src/namesdyn.c \
-	build/src/net.c \
-	build/src/player.c \
-	build/src/premap.c \
-	build/src/savegame.c \
-	build/src/sector.c \
-	build/src/rts.c \
-	build/src/osdfuncs.c \
-	build/src/osdcmds.c \
-	build/src/grpscan.c \
-	build/src/sounds.c \
-	build/src/soundsdyn.c \
-  	build/src/rev.c
+GAME_SRC=src/game.c \
+	src/actors.c \
+	src/anim.c \
+	src/animsounds.c \
+	src/animvpx.c \
+	src/common.c \
+	src/config.c \
+	src/demo.c \
+	src/gamedef.c \
+	src/gameexec.c \
+	src/gamevars.c \
+	src/global.c \
+	src/input.c \
+	src/menus.c \
+	src/namesdyn.c \
+	src/net.c \
+	src/player.c \
+	src/premap.c \
+	src/savegame.c \
+	src/sector.c \
+	src/rts.c \
+	src/osdfuncs.c \
+	src/osdcmds.c \
+	src/grpscan.c \
+	src/sounds.c \
+	src/soundsdyn.c \
+  	src/rev.c
 	
-MUSIC_SRC=build/src/audiodec/psp2music.cpp \
-	build/src/audiodec/audio_decoder.cpp \
-	build/src/audiodec/audio_resampler.cpp \
-	build/src/audiodec/decoder_fmmidi.cpp \
-	build/src/audiodec/midisequencer.cpp \
-	build/src/audiodec/midisynth.cpp
+MUSIC_SRC=src/audiodec/psp2music.cpp \
+	src/audiodec/audio_decoder.cpp \
+	src/audiodec/audio_resampler.cpp \
+	src/audiodec/decoder_fmmidi.cpp \
+	src/audiodec/midisequencer.cpp \
+	src/audiodec/midisynth.cpp
 
-JMACT_SRC=build/src/jmact/file_lib.c \
-	build/src/jmact/control.c \
-	build/src/jmact/keyboard.c \
-	build/src/jmact/mouse.c \
-	build/src/jmact/joystick.c \
-	build/src/jmact/scriplib.c \
-	build/src/jmact/animlib.c
+JMACT_SRC=src/jmact/file_lib.c \
+	src/jmact/control.c \
+	src/jmact/keyboard.c \
+	src/jmact/mouse.c \
+	src/jmact/joystick.c \
+	src/jmact/scriplib.c \
+	src/jmact/animlib.c
 
-JAUDIO_SRC= build/src/jaudiolib/src/drivers.c \
-	build/src/jaudiolib/src/fx_man.c \
-	build/src/jaudiolib/src/multivoc.c \
-	build/src/jaudiolib/src/mix.c \
-	build/src/jaudiolib/src/mixst.c \
-	build/src/jaudiolib/src/pitch.c \
-	build/src/jaudiolib/src/formats.c \
-	build/src/jaudiolib/src/vorbis.c \
-	build/src/jaudiolib/src/flac.c \
-	build/src/jaudiolib/src/xa.c \
-	build/src/jaudiolib/src/driver_nosound.c \
-	build/src/jaudiolib/src/driver_sdl.c    
+JAUDIO_SRC= src/jaudiolib/src/drivers.c \
+	src/jaudiolib/src/fx_man.c \
+	src/jaudiolib/src/multivoc.c \
+	src/jaudiolib/src/mix.c \
+	src/jaudiolib/src/mixst.c \
+	src/jaudiolib/src/pitch.c \
+	src/jaudiolib/src/formats.c \
+	src/jaudiolib/src/vorbis.c \
+	src/jaudiolib/src/flac.c \
+	src/jaudiolib/src/xa.c \
+	src/jaudiolib/src/driver_nosound.c \
+	src/jaudiolib/src/driver_sdl.c    
     
 CFILES   := $(BUILD_SRC) $(GAME_SRC) $(JMACT_SRC) $(JAUDIO_SRC)
 CPPFILES   := $(MUSIC_SRC)
@@ -114,12 +113,12 @@ ASFLAGS = $(CFLAGS)
 all: $(TARGET).vpk
 
 $(TARGET).vpk: $(TARGET).velf
-	vita-make-fself -s $< build/build/eboot.bin
+	vita-make-fself -s $< build/eboot.bin
 	vita-mksfoex -s TITLE_ID=$(TITLE) -d ATTRIBUTE2=12 "$(TARGET)" param.sfo
-	cp -f param.sfo build/build/sce_sys/param.sfo
+	cp -f param.sfo build/sce_sys/param.sfo
 
 	#------------ Comment this if you don't have 7zip ------------------
-	7z a -tzip ./$(TARGET).vpk -r ./build/build/sce_sys ./build/build/eboot.bin
+	7z a -tzip ./$(TARGET).vpk -r ./build/sce_sys ./build/eboot.bin
 	#-------------------------------------------------------------------
 
 %.velf: %.elf
