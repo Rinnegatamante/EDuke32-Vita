@@ -40,6 +40,34 @@ int _newlib_heap_size_user = 192 * 1024 * 1024;
 extern uint32_t SCE_CTRL_CONFIRM;
 extern uint32_t SCE_CTRL_CANCEL;
 
+int get_x_text(vita2d_pgf *font, char *text){
+	return (960 - vita2d_pgf_text_width(font, 1.0, text)) / 2;
+}
+
+uint32_t white;
+uint32_t yellow;
+uint32_t green;
+
+typedef struct credits_voice{
+	int x;
+	int y;
+	uint32_t *color;
+	char text[256];
+} credits_voice;
+
+#define INTRO_VOICES 8
+
+credits_voice intro[INTRO_VOICES] = {
+	{0, 100, &yellow, "EDuke32 Vita v.1.0"},
+	{0, 120, &white, "by Rinnegatamante"},
+	{0, 200, &yellow, "Thanks to my distinguished Patroners:"},
+	{0, 220, &white,  "XandridFire"},
+	{0, 240, &white,  "Billy McLaughlin II"},
+	{0, 350, &yellow, "Thanks for the help in testing this port:"},
+	{0, 370, &white,  "CountDuckula"},
+	{0, 500, &green,  "Loading, please wait..."}
+};
+
 int main(int argc, char **argv){
 	
 	SceAppUtilInitParam appUtilParam;
@@ -68,6 +96,26 @@ int main(int argc, char **argv){
 	framebuffer = vita2d_texture_get_datap(fb_texture);
 
 	baselayer_init();
+	
+	vita2d_pgf* font = vita2d_load_default_pgf();
+	white = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
+	yellow = RGBA8(0xFF, 0xFF, 0x00, 0xFF);
+	green = RGBA8(0x00, 0xFF, 0x00, 0xFF);
+	
+	int j, z;
+	for (j=0;j<INTRO_VOICES;j++){
+		intro[j].x = get_x_text(font, intro[j].text);
+	}
+	
+	for (j=0;j<3;j++){
+		vita2d_start_drawing();
+		for (z=0;z<INTRO_VOICES;z++){
+			vita2d_pgf_draw_text(font, intro[z].x, intro[z].y, *intro[z].color, 1.0, intro[z].text);
+		}
+		vita2d_end_drawing();
+		vita2d_wait_rendering_done();
+		vita2d_swap_buffers();
+	}
 
 	int r = app_main(argc, (const char **)argv);
 
