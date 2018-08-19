@@ -37,7 +37,7 @@ BUILD_SRC = \
 	build/src/mutex.c \
 	build/src/xxhash.c \
 	build/src/voxmodel.c \
-	build/src/ctrlayer.c
+	build/src/psp2layer.c
 
 GAME_SRC=build/src/game.c \
 	build/src/actors.c \
