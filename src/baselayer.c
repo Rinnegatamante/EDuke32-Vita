@@ -94,6 +94,8 @@ void SetKey(int32_t key, int32_t state)
     }
 }
 
+extern uint32_t SCE_CTRL_CONFIRM;
+
 //
 // bgetchar, bflushchars -- character-based input functions
 //
@@ -101,7 +103,7 @@ char bgetchar(void)
 {
 	SceCtrlData pad;
 	sceCtrlPeekBufferPositive(0, &pad, 1);
-	if (pad.buttons & SCE_CTRL_START){
+	if (pad.buttons & SCE_CTRL_CONFIRM){
 		return 13;
 	}
 	
