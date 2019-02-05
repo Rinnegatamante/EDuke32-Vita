@@ -486,11 +486,7 @@ void LOG(const char *format, ...);
 #define Bmalloc malloc
 #define Bcalloc calloc
 #define Brealloc realloc
-#ifdef __PSP2__
-#define Bfree(x) do{LOG("%s,%s,%s",__FILE__,__LINE__,__FUNCTION__);free(x);}while(0)
-#else
 #define Bfree free
-#endif
 #define Bopen open
 #define Bclose close
 #define Bwrite write

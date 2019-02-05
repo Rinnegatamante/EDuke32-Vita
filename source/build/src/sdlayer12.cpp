@@ -420,47 +420,6 @@ int32_t videoSetMode(int32_t x, int32_t y, int32_t c, int32_t fs)
     return 0;
 }
 
-//
-// showframe() -- update the display
-//
-void videoShowFrame(int32_t w)
-{
-    UNREFERENCED_PARAMETER(w);
-
-#ifdef USE_OPENGL
-    if (!nogl)
-    {
-        if (bpp > 8)
-        {
-            if (palfadedelta)
-                fullscreen_tint_gl(palfadergb.r, palfadergb.g, palfadergb.b, palfadedelta);
-        }
-        else
-        {
-            glsurface_blitBuffer();
-        }
-
-        SDL_GL_SwapBuffers();
-        return;
-    }
-#endif
-
-    if (offscreenrendering) return;
-
-    if (lockcount)
-    {
-        printf("Frame still locked %d times when showframe() called.\n", lockcount);
-        while (lockcount) videoEndDrawing();
-    }
-
-    if (SDL_MUSTLOCK(sdl_surface)) SDL_LockSurface(sdl_surface);
-    softsurface_blitBuffer((uint32_t*) sdl_surface->pixels, sdl_surface->format->BitsPerPixel);
-    if (SDL_MUSTLOCK(sdl_surface)) SDL_UnlockSurface(sdl_surface);
-
-    SDL_Flip(sdl_surface);
-}
-
-
 // SDL 1.2 specific event handling
 int32_t handleevents_pollsdl(void)
 {

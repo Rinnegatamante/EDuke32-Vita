@@ -260,7 +260,7 @@ ifeq ($(PLATFORM),PSP2)
             -lSceDisplay_stub -lSceGxm_stub -lSceHid_stub -lSceAudio_stub -lSceLibKernel_stub -lpng \
     		-lz -lSceDisplay_stub -lSceMotion_stub -lSceAppMgr_stub -lSceSysmodule_stub -lSceCtrl_stub \
     		-lSceTouch_stub -lSceMotion_stub -lm -lSceAppMgr_stub -lSceAppUtil_stub -lScePgf_stub -ljpeg \
-    		-lSceRtc_stub -lScePower_stub -lSDL_mixer -lSDL -lvitaGL -lmikmod -lspeexdsp
+    		-lSceRtc_stub -lScePower_stub -lSDL_mixer -lSDL -lmikmod -lspeexdsp
 endif
 ifeq ($(RENDERTYPE),SDL)
     engine_objs += sdlayer.cpp
