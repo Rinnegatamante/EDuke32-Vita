@@ -457,7 +457,7 @@ credits_voice intro[INTRO_VOICES] = {
     {0, 500, &green,  "Loading, please wait..."}
 };
 
-int psp2_main(int argc, char *argv[]) {
+int psp2_main(unsigned int argc, void *argv) {
     SceAppUtilInitParam appUtilParam;
     SceAppUtilBootParam appUtilBootParam;
     memset(&appUtilParam, 0, sizeof(SceAppUtilInitParam));
@@ -525,7 +525,12 @@ int main(int argc, char *argv[])
 #endif
 {
 #ifdef __PSP2__
-    return psp2_main(argc, argv);
+	SceUID main_thread = sceKernelCreateThread("EDuke32", psp2_main, 0x40, 0x800000, 0, 0, NULL);
+	if (main_thread >= 0){
+		sceKernelStartThread(main_thread, 0, NULL);
+		sceKernelWaitThreadEnd(main_thread, NULL, NULL);
+	}
+    return 0;
 #endif
 #ifdef __ANDROID__
     if (setjmp(eduke32_exit_jmp_buf))
@@ -700,10 +705,6 @@ int32_t initsystem(void)
 
     mutex_init(&m_initprintf);
 
-#ifdef _WIN32
-    win_init();
-#endif
-
     if (sdlayer_checkversion())
         return -1;
 
@@ -714,49 +715,8 @@ int32_t initsystem(void)
     else if ((inited & sdlinitflags) != sdlinitflags)
         err = SDL_InitSubSystem(sdlinitflags & ~inited);
 
-    if (err)
-    {
-        initprintf("Initialization failed! (%s)\nNon-interactive mode enabled\n", SDL_GetError());
-        novideo = 1;
-#ifdef USE_OPENGL
-        nogl = 1;
-#endif
-    }
-
-#if SDL_MAJOR_VERSION > 1
-    SDL_StopTextInput();
-#endif
-
-    atexit(uninitsystem);
-
     frameplace = 0;
     lockcount = 0;
-
-    if (!novideo)
-    {
-#ifdef USE_OPENGL
-        if (SDL_GL_LoadLibrary(0))
-        {
-            initprintf("Failed loading OpenGL Driver.  GL modes will be unavailable. Error: %s\n", SDL_GetError());
-            nogl = 1;
-        }
-#ifdef POLYMER
-        if (loadglulibrary(getenv("BUILD_GLULIB")))
-        {
-            initprintf("Failed loading GLU.  GL modes will be unavailable. Error: %s\n", SDL_GetError());
-            nogl = 1;
-        }
-#endif
-#endif
-
-#ifndef _WIN32
-        const char *drvname = SDL_GetVideoDriver(0);
-
-        if (drvname)
-            initprintf("Using \"%s\" video driver\n", drvname);
-#endif
-        wm_setapptitle(apptitle);
-    }
 
     return 0;
 }
@@ -770,27 +730,7 @@ void uninitsystem(void)
 {
     uninitinput();
     timerUninit();
-
-    if (appicon)
-    {
-        SDL_FreeSurface(appicon);
-        appicon = NULL;
-    }
-
-    SDL_Quit();
-
-#ifdef _WIN32
-    win_uninit();
-#endif
-
-#ifdef USE_OPENGL
-# if SDL_MAJOR_VERSION!=1
-    SDL_GL_UnloadLibrary();
-# endif
-# ifdef POLYMER
-    unloadglulibrary();
-# endif
-#endif
+    vita2d_fini();
 }
 
 
@@ -1572,9 +1512,9 @@ void setvideomode_sdlcommonpost(int32_t x, int32_t y, int32_t c, int32_t fs, int
         sdlayer_setvideomode_opengl();
 #endif
 
-    xres = x;
-    yres = y;
-    bpp = c;
+//    xres = x;
+//    yres = y;
+//    bpp = c;
     fullscreen = fs;
     // bytesperline = sdl_surface->pitch;
     numpages = c > 8 ? 2 : 1;
@@ -1758,13 +1698,7 @@ void videoResetMode(void)
 // begindrawing() -- locks the framebuffer for drawing
 //
 
-#ifdef DEBUG_FRAME_LOCKING
-uint32_t begindrawing_line[BEGINDRAWING_SIZE];
-const char *begindrawing_file[BEGINDRAWING_SIZE];
-void begindrawing_real(void)
-#else
 void videoBeginDrawing(void)
-#endif
 {
     if (bpp > 8)
     {
@@ -1781,29 +1715,12 @@ void videoBeginDrawing(void)
 
     if (offscreenrendering) return;
 
-#ifdef USE_OPENGL
-    if (!nogl)
-    {
-        frameplace = (intptr_t)glsurface_getBuffer();
-        if (modechange)
-        {
-            bytesperline = xdim;
-            calc_ylookup(bytesperline, ydim);
-            modechange=0;
-        }
-        return;
-    }
-#endif
-
-#ifdef __PSP2__
 	frameplace = (intptr_t)framebuffer;
-#else
-    frameplace = (intptr_t)softsurface_getBuffer();
-#endif
+
     if (modechange)
     {
-        bytesperline = xdim;
-        calc_ylookup(bytesperline, ydim);
+        bytesperline = xres;
+        calc_ylookup(bytesperline, yres);
         modechange=0;
     }
 }
@@ -1830,7 +1747,6 @@ void videoEndDrawing(void)
 //
 // showframe() -- update the display
 //
-#if SDL_MAJOR_VERSION != 1
 
 #ifdef __ANDROID__
 extern "C" void AndroidDrawControls();
@@ -1840,69 +1756,16 @@ void videoShowFrame(int32_t w)
 {
     UNREFERENCED_PARAMETER(w);
 
-#ifdef __ANDROID__
-    if (mobile_halted) return;
-#endif
-
-#ifdef USE_OPENGL
-    if (!nogl)
-    {
-        if (bpp > 8)
-        {
-            if (palfadedelta)
-                fullscreen_tint_gl(palfadergb.r, palfadergb.g, palfadergb.b, palfadedelta);
-
-#ifdef __ANDROID__
-            AndroidDrawControls();
-#endif
-        }
-        else
-        {
-            glsurface_blitBuffer();
-        }
-
-        static uint32_t lastSwapTime = 0;
-        SDL_GL_SwapWindow(sdl_window);
-        if (vsync)
-        {
-            // busy loop until we're ready to update again
-            while (SDL_GetTicks()-lastSwapTime < currentVBlankInterval) {}
-        }
-        lastSwapTime = SDL_GetTicks();
-        return;
-    }
-#endif
-
     if (offscreenrendering) return;
-
-#ifdef __PSP2__	
+	
     memcpy(vita2d_texture_get_datap(gpu_texture),vita2d_texture_get_datap(fb_texture),vita2d_texture_get_stride(gpu_texture)*vita2d_texture_get_height(gpu_texture));
     vita2d_start_drawing();
     vita2d_draw_texture(gpu_texture, 0, 0);
     vita2d_end_drawing();
     vita2d_wait_rendering_done();
     vita2d_swap_buffers();
-#else
-    if (lockcount)
-    {
-        printf("Frame still locked %d times when showframe() called.\n", lockcount);
-        while (lockcount) videoEndDrawing();
-    }
-
-    if (SDL_MUSTLOCK(sdl_surface)) SDL_LockSurface(sdl_surface);
-    softsurface_blitBuffer((uint32_t*) sdl_surface->pixels, sdl_surface->format->BitsPerPixel);
-    if (SDL_MUSTLOCK(sdl_surface)) SDL_UnlockSurface(sdl_surface);
-
-    if (SDL_UpdateWindowSurface(sdl_window))
-    {
-        // If a fullscreen X11 window is minimized then this may be required.
-        // FIXME: What to do if this fails...
-        sdl_surface = SDL_GetWindowSurface(sdl_window);
-        SDL_UpdateWindowSurface(sdl_window);
-    }
-#endif
 }
-#endif
+
 //
 // setpalette() -- set palette values
 //
@@ -1910,7 +1773,6 @@ int32_t videoUpdatePalette(int32_t start, int32_t num)
 {
     UNREFERENCED_PARAMETER(start);
     UNREFERENCED_PARAMETER(num);
-#ifdef __PSP2__
     uint8_t *pal = (uint8_t*)curpalettefaded;
     uint8_t r, g, b;
     uint32_t* palette_tbl = (uint32_t*)vita2d_texture_get_palette(fb_texture);
@@ -1923,23 +1785,6 @@ int32_t videoUpdatePalette(int32_t start, int32_t num)
         palette_tbl2[i] = r | (g << 8) | (b << 16) | (0xFF << 24);
         pal += 4;
     }
-#else
-    if (bpp > 8)
-        return 0;  // no palette in opengl
-
-#ifdef USE_OPENGL
-    if (!nogl)
-        glsurface_setPalette(curpalettefaded);
-    else
-#endif
-    {
-        if (sdl_surface)
-            softsurface_setPalette(curpalettefaded,
-                                   sdl_surface->format->Rmask,
-                                   sdl_surface->format->Gmask,
-                                   sdl_surface->format->Bmask);
-    }
-#endif
     return 0;
 }
 
@@ -1948,9 +1793,9 @@ int32_t videoUpdatePalette(int32_t start, int32_t num)
 //
 int32_t videoSetGamma(void)
 {
-#ifdef __PSP2__
+
 	return 0;
-#endif
+
     if (novideo)
         return 0;
 
