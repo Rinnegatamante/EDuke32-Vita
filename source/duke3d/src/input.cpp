@@ -30,6 +30,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "input.h"
 #include "menus.h"
 
+#ifdef __PSP2__
+#define PSP2_UP 8
+#define PSP2_DOWN 6
+#define PSP2_LEFT 7
+#define PSP2_RIGHT 9
+#define PSP2_TRIANGLE 0
+#define PSP2_SQUARE 3
+#define PSP2_CROSS 2
+#define PSP2_CIRCLE 1
+#define PSP2_SELECT 10
+#define PSP2_START 11
+#define PSP2_L 4
+#define PSP2_R 5
+#endif
+
 int32_t I_CheckAllInput(void)
 {
     return (
@@ -71,6 +86,9 @@ int32_t I_AdvanceTrigger(void)
             BUTTON(gamefunc_Fire)
 # endif
 #endif
+#ifdef __PSP2__
+            || (JOYSTICK_GetButtons()&(1<<PSP2_CROSS))
+#endif
             );
 }
 
@@ -86,6 +104,10 @@ void I_AdvanceTriggerClear(void)
     CONTROL_ClearButton(gamefunc_Open);
     CONTROL_ClearButton(gamefunc_Fire);
 #endif
+#ifdef __PSP2__
+    JOYSTICK_ClearButton(1<<PSP2_CROSS);
+#endif
+
 }
 
 int32_t I_ReturnTrigger(void)
@@ -96,6 +118,9 @@ int32_t I_ReturnTrigger(void)
             BUTTON(gamefunc_Crouch)
 #if defined(GEKKO)
             || (JOYSTICK_GetButtons()&(WII_B|WII_HOME))
+#endif
+#ifdef __PSP2__
+            || (JOYSTICK_GetButtons()&(1<<PSP2_CIRCLE|1<<PSP2_START))
 #endif
             );
 }
@@ -110,6 +135,11 @@ void I_ReturnTriggerClear(void)
     JOYSTICK_ClearButton(WII_B);
     JOYSTICK_ClearButton(WII_HOME);
 #endif
+#ifdef __PSP2__
+    JOYSTICK_ClearButton(1<<PSP2_CIRCLE);
+    JOYSTICK_ClearButton(1<<PSP2_START);
+#endif
+
 }
 
 
@@ -120,6 +150,9 @@ int32_t I_EscapeTrigger(void)
 #if defined(GEKKO)
             || (JOYSTICK_GetButtons()&WII_HOME)
 #endif
+#ifdef __PSP2__
+            || (JOYSTICK_GetButtons()&(1<<PSP2_START))
+#endif
             );
 }
 
@@ -129,6 +162,9 @@ void I_EscapeTriggerClear(void)
     KB_ClearKeyDown(sc_Escape);
 #if defined(GEKKO)
     JOYSTICK_ClearButton(WII_HOME);
+#endif
+#ifdef __PSP2__
+    JOYSTICK_ClearButton(1<<PSP2_START);
 #endif
 }
 
@@ -141,6 +177,9 @@ int32_t I_MenuUp(void)
             (MOUSE_GetButtons()&WHEELUP_MOUSE) ||
             BUTTON(gamefunc_Move_Forward) ||
             (JOYSTICK_GetHat(0)&HAT_UP)
+#ifdef __PSP2__
+            || (JOYSTICK_GetButtons()&(1<<PSP2_UP))
+#endif
             );
 }
 
@@ -151,6 +190,9 @@ void I_MenuUpClear(void)
     MOUSE_ClearButton(WHEELUP_MOUSE);
     CONTROL_ClearButton(gamefunc_Move_Forward);
     JOYSTICK_ClearHat(0);
+#ifdef __PSP2__
+    JOYSTICK_ClearButton(1<<PSP2_UP);
+#endif
 }
 
 
@@ -162,6 +204,9 @@ int32_t I_MenuDown(void)
             (MOUSE_GetButtons()&WHEELDOWN_MOUSE) ||
             BUTTON(gamefunc_Move_Backward) ||
             (JOYSTICK_GetHat(0)&HAT_DOWN)
+#ifdef __PSP2__
+            || (JOYSTICK_GetButtons()&(1<<PSP2_DOWN))
+#endif
             );
 }
 
@@ -173,6 +218,9 @@ void I_MenuDownClear(void)
     MOUSE_ClearButton(WHEELDOWN_MOUSE);
     CONTROL_ClearButton(gamefunc_Move_Backward);
     JOYSTICK_ClearHat(0);
+#ifdef __PSP2__
+    JOYSTICK_ClearButton(1<<PSP2_DOWN);
+#endif
 }
 
 
@@ -185,6 +233,9 @@ int32_t I_MenuLeft(void)
             BUTTON(gamefunc_Turn_Left) ||
             BUTTON(gamefunc_Strafe_Left) ||
             (JOYSTICK_GetHat(0)&HAT_LEFT)
+#ifdef __PSP2__
+            || (JOYSTICK_GetButtons()&(1<<PSP2_LEFT))
+#endif
             );
 }
 
@@ -196,6 +247,9 @@ void I_MenuLeftClear(void)
     CONTROL_ClearButton(gamefunc_Turn_Left);
     CONTROL_ClearButton(gamefunc_Strafe_Left);
     JOYSTICK_ClearHat(0);
+#ifdef __PSP2__
+    JOYSTICK_ClearButton(1<<PSP2_LEFT);
+#endif
 }
 
 
@@ -209,6 +263,9 @@ int32_t I_MenuRight(void)
             BUTTON(gamefunc_Strafe_Right) ||
             (MOUSE_GetButtons()&MIDDLE_MOUSE) ||
             (JOYSTICK_GetHat(0)&HAT_RIGHT)
+#ifdef __PSP2__
+            || (JOYSTICK_GetButtons()&(1<<PSP2_RIGHT))
+#endif
             );
 }
 
@@ -221,6 +278,9 @@ void I_MenuRightClear(void)
     CONTROL_ClearButton(gamefunc_Strafe_Right);
     MOUSE_ClearButton(MIDDLE_MOUSE);
     JOYSTICK_ClearHat(0);
+#ifdef __PSP2__
+    JOYSTICK_ClearButton(1<<PSP2_RIGHT);
+#endif
 }
 
 
