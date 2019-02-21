@@ -628,7 +628,7 @@ uint32_t Bgetsysmemsize(void)
     }
 
     return siz;
-#elif (defined(_SC_PAGE_SIZE) || defined(_SC_PAGESIZE)) && defined(_SC_PHYS_PAGES) && !defined(GEKKO)
+#elif (defined(_SC_PAGE_SIZE) || defined(_SC_PAGESIZE)) && defined(_SC_PHYS_PAGES) && !defined(GEKKO) && !defined(__PSP2__)
     uint32_t siz = UINT32_MAX;
     int64_t scpagesiz, scphyspages;
 
