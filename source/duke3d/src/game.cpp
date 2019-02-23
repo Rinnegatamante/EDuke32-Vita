@@ -6195,17 +6195,20 @@ int app_main(int argc, char const * const * argv)
     if (!g_useCwd)
     {
         char cwd[BMAX_PATH];
-        /*char *homedir = Bgethomedir();
+        char *homedir = Bgethomedir();
         if (homedir)
             Bsnprintf(cwd, sizeof(cwd), "%s/Library/Logs/" APPBASENAME ".log", homedir);
-        else*/
-            Bstrcpy(cwd, "ux0:data/EDuk32/eduke32.log");
+        else
+            Bstrcpy(cwd, "eduke32.log");
         OSD_SetLogFile(cwd);
-        //Bfree(homedir);
+        Bfree(homedir);
     }
     else
+#elif defined(__PSP2__)
+	OSD_SetLogFile("ux0:data/EDuke32/eduke32.log");
+#else
+	OSD_SetLogFile(APPBASENAME ".log");
 #endif
-    OSD_SetLogFile(APPBASENAME ".log");
 
     OSD_SetFunctions(GAME_drawosdchar,
                      GAME_drawosdstr,
