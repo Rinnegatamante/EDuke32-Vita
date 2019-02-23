@@ -234,7 +234,7 @@ static void LoadGameList(void)
     }
 #endif
 
-    CACHE1D_FIND_REC * const srch = klistpath("/", "*.grpinfo", CACHE1D_FIND_FILE);
+    CACHE1D_FIND_REC * const srch = klistpath("ux0:data/EDuke32/", "*.grpinfo", CACHE1D_FIND_FILE);
 
     for (CACHE1D_FIND_REC *sidx = srch; sidx; sidx = sidx->next)
         LoadList(sidx->name);
@@ -467,7 +467,7 @@ int32_t ScanGroups(void)
 
     for (char const *extension : extensions)
     {
-        CACHE1D_FIND_REC *srch = klistpath("/", extension, CACHE1D_FIND_FILE);
+        CACHE1D_FIND_REC *srch = klistpath("ux0:data/EDuke32/", extension, CACHE1D_FIND_FILE);
         ProcessGroups(srch);
         klistfree(srch);
     }

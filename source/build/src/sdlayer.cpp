@@ -444,30 +444,71 @@ typedef struct credits_voice{
     char text[256];
 } credits_voice;
 
-#define INTRO_VOICES 8
+#define INTRO_VOICES 7
 
 credits_voice intro[INTRO_VOICES] = {
-    {0, 100, &yellow, "EDuke32 Vita v.1.0"},
-    {0, 120, &white, "by Rinnegatamante"},
-    {0, 200, &yellow, "Thanks to my distinguished Patroners:"},
-    {0, 220, &white,  "XandridFire"},
-    {0, 240, &white,  "Billy McLaughlin II"},
-    {0, 350, &yellow, "Thanks for the help in testing this port:"},
-    {0, 370, &white,  "CountDuckula"},
-    {0, 500, &green,  "Loading, please wait..."}
+    {0, 100, &yellow, "EDuke32 Vita v.1.5"},
+    {0, 120, &white,  "Port by Rinnegatamante"},
+    {0, 180, &yellow, "Select a GRP file to launch:"},
+	{0, 440, &green,  "Press START to insert custom launch args"},
+    {0, 480, &yellow, "Thanks to my distinguished Patroners:"},
+    {0, 500, &white,  "RaveHeart"},
+    {0, 520, &white,  "Tain Sueiras"},
 };
+
+typedef struct grp_info {
+	char name[64];
+	int x;
+} grp_info;
+
+char empty[2] = "";
+char grp_ln[16] = "-gamegrp";
+grp_info grp_files[12];
+uint8_t num_grp_files = 0;
+
+int scanForGRPFiles(vita2d_pgf *font) {
+	SceIoDirent g_dir;
+	SceUID d = sceIoDopen("ux0:data/EDuke32");
+	while (sceIoDread(d, &g_dir) > 0) {
+		if (strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".grp") == 0) {
+			strcpy(grp_files[num_grp_files].name, g_dir.d_name);
+			grp_files[num_grp_files].x = get_x_text(font, g_dir.d_name);
+			num_grp_files++;
+		}
+	}
+}
+
+static uint16_t title[SCE_IME_DIALOG_MAX_TITLE_LENGTH + 1];
+static uint16_t initial_text[SCE_IME_DIALOG_MAX_TEXT_LENGTH + 1];
+static uint16_t input_text[SCE_IME_DIALOG_MAX_TEXT_LENGTH + 1];
+char title_keyboard[SCE_IME_DIALOG_MAX_TEXT_LENGTH + 1] = "";
+
+void ascii2utf(uint16_t* dst, char* src){
+	if(!src || !dst)return;
+	while(*src)*(dst++)=(*src++);
+	*dst=0x00;
+}
+
+void utf2ascii(char* dst, uint16_t* src){
+	if(!src || !dst)return;
+	while(*src)*(dst++)=(*(src++))&0xFF;
+	*dst=0x00;
+}
 
 int psp2_main(unsigned int argc, void *argv) {
     SceAppUtilInitParam appUtilParam;
     SceAppUtilBootParam appUtilBootParam;
-    memset(&appUtilParam, 0, sizeof(SceAppUtilInitParam));
+	memset(&appUtilParam, 0, sizeof(SceAppUtilInitParam));
     memset(&appUtilBootParam, 0, sizeof(SceAppUtilBootParam));
     sceAppUtilInit(&appUtilParam, &appUtilBootParam);
-    int enterButton;
-    sceAppUtilSystemParamGetInt(SCE_SYSTEM_PARAM_ID_ENTER_BUTTON, &enterButton);
+	SceCommonDialogConfigParam cmnDlgCfgParam;
+	sceCommonDialogConfigParamInit(&cmnDlgCfgParam);
+	sceAppUtilSystemParamGetInt(SCE_SYSTEM_PARAM_ID_LANG, (int *)&cmnDlgCfgParam.language);
+	sceAppUtilSystemParamGetInt(SCE_SYSTEM_PARAM_ID_ENTER_BUTTON, (int *)&cmnDlgCfgParam.enterButtonAssign);
+    sceCommonDialogSetConfigParam(&cmnDlgCfgParam);
     
-    SCE_CTRL_CONFIRM = (enterButton == 0) ? SCE_CTRL_CIRCLE : SCE_CTRL_CROSS;
-    SCE_CTRL_CANCEL = (enterButton == 0) ? SCE_CTRL_CROSS : SCE_CTRL_CIRCLE;
+    SCE_CTRL_CONFIRM = (cmnDlgCfgParam.enterButtonAssign == 0) ? SCE_CTRL_CIRCLE : SCE_CTRL_CROSS;
+    SCE_CTRL_CANCEL = (cmnDlgCfgParam.enterButtonAssign == 0) ? SCE_CTRL_CROSS : SCE_CTRL_CIRCLE;
     
     scePowerSetArmClockFrequency(444);
     scePowerSetBusClockFrequency(222);
@@ -486,29 +527,95 @@ int psp2_main(unsigned int argc, void *argv) {
     
     baselayer_init();
     
-    vita2d_pgf* font = vita2d_load_default_pgf();
+    vita2d_pgf *font = vita2d_load_default_pgf();
     white = RGBA8(0xFF, 0xFF, 0xFF, 0xFF);
     yellow = RGBA8(0xFF, 0xFF, 0x00, 0xFF);
     green = RGBA8(0x00, 0xFF, 0x00, 0xFF);
     
-    int j, z;
+    int j, z, k = 0;
     for (j=0;j<INTRO_VOICES;j++){
         intro[j].x = get_x_text(font, intro[j].text);
     }
     
-    for (j=0;j<3;j++){
+	char *int_argv[3];
+	int_argv[0] = empty;
+	int_argv[1] = grp_ln;
+	scanForGRPFiles(font);
+	
+	SceCtrlData pad;
+	uint32_t oldpad;
+    for (;;) {
+		sceCtrlPeekBufferPositive(0, &pad, 1);
         vita2d_start_drawing();
-        for (z=0;z<INTRO_VOICES;z++){
+		vita2d_clear_screen();
+        for (z=0;z<INTRO_VOICES;z++) {
             vita2d_pgf_draw_text(font, intro[z].x, intro[z].y, *intro[z].color, 1.0, intro[z].text);
         }
+		for (z=0;z<num_grp_files;z++) {
+			vita2d_pgf_draw_text(font, grp_files[z].x, 200 + z * 20, k == z ? yellow : white, 1.0, grp_files[z].name);
+		}
         vita2d_end_drawing();
         vita2d_wait_rendering_done();
         vita2d_swap_buffers();
+		if ((pad.buttons & SCE_CTRL_DOWN) && (!(oldpad & SCE_CTRL_DOWN))) {
+			k = (k + 1) % num_grp_files;
+		} else if ((pad.buttons & SCE_CTRL_UP) && (!(oldpad & SCE_CTRL_UP))) {
+			k--;
+			if (k < 0) k = num_grp_files - 1;
+		} else if ((pad.buttons & SCE_CTRL_CONFIRM) && (!(oldpad & SCE_CTRL_CONFIRM))) {
+			int_argv[2] = grp_files[k].name;
+			break;
+		} else if ((pad.buttons & SCE_CTRL_START) && (!(oldpad & SCE_CTRL_START))) {
+			memset(input_text, 0, (SCE_IME_DIALOG_MAX_TEXT_LENGTH + 1) << 1);
+			memset(initial_text, 0, (SCE_IME_DIALOG_MAX_TEXT_LENGTH) << 1);
+			sprintf(title_keyboard, "Insert command-line arguments");
+			ascii2utf(title, title_keyboard);
+			SceImeDialogParam param;
+			sceImeDialogParamInit(&param);
+			param.supportedLanguages = 0x0001FFFF;
+			param.languagesForced = SCE_TRUE;
+			param.type = SCE_IME_TYPE_BASIC_LATIN;
+			param.title = title;
+			param.maxTextLength = SCE_IME_DIALOG_MAX_TEXT_LENGTH;
+			param.initialText = initial_text;
+			param.inputTextBuffer = input_text;
+			sceImeDialogInit(&param);
+			while (sceImeDialogGetStatus() == SCE_COMMON_DIALOG_STATUS_RUNNING) {
+				vita2d_start_drawing();
+				vita2d_clear_screen();
+				vita2d_end_drawing();
+				vita2d_common_dialog_update();
+				vita2d_swap_buffers();
+			}
+			SceImeDialogResult result;
+			memset(&result, 0, sizeof(SceImeDialogResult));
+			sceImeDialogGetResult(&result);
+			if (result.button == SCE_IME_DIALOG_BUTTON_ENTER) {
+				utf2ascii(title_keyboard, input_text);
+				sceImeDialogTerm();
+				break;
+			}
+			sceImeDialogTerm();
+		}
+		oldpad = pad.buttons;
     }
-
-    int r = app_main(argc, (const char **)argv);
-
-    return r;
+	
+	if (strlen(title_keyboard) > 1) {
+		char *cmd_argv[32];
+		int cmd_argc = 2;
+		cmd_argv[0] = "";
+		cmd_argv[1] = title_keyboard;
+		char *ptr = title_keyboard;
+		for (;;) {
+			char *space = strstr(ptr, " ");
+			if (space == NULL) break;
+			*space = 0;
+			cmd_argv[cmd_argc++] = ptr = space + 1;
+		}
+		return app_main(cmd_argc, (const char **)cmd_argv);
+	} else {
+		return app_main(3, (const char **)int_argv);
+	}
 }
 #endif
 

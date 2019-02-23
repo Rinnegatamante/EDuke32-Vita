@@ -406,10 +406,10 @@ void G_LoadGroups(int32_t autoload)
     {
         char cwd[BMAX_PATH];
 
-        Bstrcat(g_rootDir, g_modDir);
+        Bstrcpy(g_rootDir, g_modDir);
         addsearchpath(g_rootDir);
         //        addsearchpath(mod_dir);
-
+#ifndef __PSP2__
         if (getcwd(cwd, BMAX_PATH))
         {
             Bsnprintf(cwd, sizeof(cwd), "%s/%s", cwd, g_modDir);
@@ -420,7 +420,7 @@ void G_LoadGroups(int32_t autoload)
                         addsearchpath(cwd);
             }
         }
-
+#endif
 #ifdef USE_OPENGL
         Bsnprintf(cwd, sizeof(cwd), "%s/%s", g_modDir, TEXCACHEFILE);
         Bstrcpy(TEXCACHEFILE, cwd);
@@ -470,10 +470,10 @@ void G_LoadGroups(int32_t autoload)
         if (i != -1)
             G_DoAutoload(grpfile);
     }
-
+#ifndef __PSP2__
     if (g_modDir[0] != '/')
         G_LoadGroupsInDir(g_modDir);
-
+#endif
 #ifndef EDUKE32_STANDALONE
     if (g_defNamePtr == NULL)
     {
