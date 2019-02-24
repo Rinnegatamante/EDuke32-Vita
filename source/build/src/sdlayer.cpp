@@ -48,7 +48,7 @@ static SDL_version linked;
 #include <vita2d.h>
 #include "psp2_kbdvita.h"
 
-int _newlib_heap_size_user = 330 * 1024 * 1024;
+int _newlib_heap_size_user = 300 * 1024 * 1024;
 
 #define MAX_CURDIR_PATH 512
 char cur_dir[MAX_CURDIR_PATH] = "ux0:data/EDuke32/";
@@ -449,7 +449,7 @@ typedef struct credits_voice{
 #define INTRO_VOICES 7
 
 credits_voice intro[INTRO_VOICES] = {
-    {0, 100, &yellow, "EDuke32 Vita v.1.5"},
+    {0, 100, &yellow, "EDuke32 Vita v.1.5.1"},
     {0, 120, &white,  "Port by Rinnegatamante"},
     {0, 180, &yellow, "Select a GRP file to launch:"},
 	{0, 440, &green,  "Press START to insert custom launch args"},
