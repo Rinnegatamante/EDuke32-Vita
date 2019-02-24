@@ -47,7 +47,7 @@ static SDL_version linked;
 #ifdef __PSP2__
 #include <vita2d.h>
 
-int _newlib_heap_size_user = 192 * 1024 * 1024;
+int _newlib_heap_size_user = 330 * 1024 * 1024;
 
 #define MAX_CURDIR_PATH 512
 char cur_dir[MAX_CURDIR_PATH] = "ux0:data/EDuke32/";
