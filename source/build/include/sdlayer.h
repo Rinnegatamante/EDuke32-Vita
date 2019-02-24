@@ -22,6 +22,11 @@ HINSTANCE win_gethinstance(void);
 
 #include "sdlappicon.h"
 
+#ifdef __PSP2__
+void PSP2_StartTextInput(char *initial_text, int multiline);
+void PSP2_StopTextInput();
+#endif
+
 #if (SDL_MAJOR_VERSION == 1 && SDL_MINOR_VERSION < 3) // SDL 1.2
 int32_t SDL_WaitEventTimeout(SDL_Event *event, int32_t timeout);
 #endif

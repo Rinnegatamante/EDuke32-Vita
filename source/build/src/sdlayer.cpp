@@ -46,11 +46,13 @@ static SDL_version linked;
 
 #ifdef __PSP2__
 #include <vita2d.h>
+#include "psp2_kbdvita.h"
 
 int _newlib_heap_size_user = 330 * 1024 * 1024;
 
 #define MAX_CURDIR_PATH 512
 char cur_dir[MAX_CURDIR_PATH] = "ux0:data/EDuke32/";
+int can_use_IME_keyboard = 1;
 char *getcwd(char *buf, size_t size) {
     if (buf != NULL) {
         strncpy(buf, cur_dir, size);
@@ -2440,6 +2442,61 @@ int32_t handleevents(void)
 
     return rv;
 }
+
+#ifdef __PSP2__
+void PSP2_StartTextInput(char *initial_text, int multiline) {
+    if (!can_use_IME_keyboard)
+    return;
+    
+    can_use_IME_keyboard = 0;
+    
+    char *text = kbdvita_get("Enter New Text:", initial_text, 600, multiline);
+    
+    if (text != NULL)
+    {
+        int i=0;
+        while (text[i]!=0 && i<600) {
+            if (text[i]>='A' && text[i]<='Z')
+            text[i]+=32;
+            // convert lf to return
+            if (text[i]==10)
+            text[i]=SDLK_RETURN;
+            SDL_Event down_event;
+            down_event.type = SDL_KEYDOWN;
+            down_event.key.keysym.sym = text[i];
+            down_event.key.keysym.unicode = text[i];
+            down_event.key.keysym.mod = 0;
+            SDL_PushEvent(&down_event);
+            SDL_Event up_event;
+            up_event.type = SDL_KEYUP;
+            up_event.key.keysym.sym = text[i];
+            up_event.key.keysym.unicode = text[i];
+            up_event.key.keysym.mod = 0;
+            SDL_PushEvent(&up_event);
+            i++;
+        }
+    }
+    // append return to single-line text entry
+    if (!multiline) {
+        SDL_Event down_event;
+        down_event.type = SDL_KEYDOWN;
+        down_event.key.keysym.sym = SDLK_RETURN;
+        down_event.key.keysym.unicode = SDLK_RETURN;
+        down_event.key.keysym.mod = 0;
+        SDL_PushEvent(&down_event);
+        SDL_Event up_event;
+        up_event.type = SDL_KEYUP;
+        up_event.key.keysym.sym = SDLK_RETURN;
+        up_event.key.keysym.unicode = SDLK_RETURN;
+        up_event.key.keysym.mod = 0;
+        SDL_PushEvent(&up_event);
+    }
+}
+
+void PSP2_StopTextInput() {
+    can_use_IME_keyboard = 1;
+}
+#endif
 
 #if SDL_MAJOR_VERSION == 1
 #include "sdlayer12.cpp"

@@ -256,6 +256,8 @@ ifeq ($(PLATFORM),WII)
     LINKERFLAGS += -Wl,-wrap,c_default_exceptionhandler
 endif
 ifeq ($(PLATFORM),PSP2)
+    engine_cflags += -fpermissive
+    engine_objs += psp2_kbdvita.cpp
     LIBS += -lvorbisfile -lvorbis -logg -lmpg123 -lmikmod -lm -lz -lvita2d -lSceCommonDialog_stub \
             -lSceDisplay_stub -lSceGxm_stub -lSceHid_stub -lSceAudio_stub -lSceLibKernel_stub -lpng \
     		-lz -lSceDisplay_stub -lSceMotion_stub -lSceAppMgr_stub -lSceSysmodule_stub -lSceCtrl_stub \

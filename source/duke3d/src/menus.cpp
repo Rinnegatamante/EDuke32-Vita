@@ -35,6 +35,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 droidinput_t droidinput;
 #endif
 
+#ifdef __PSP2__
+#include "sdlayer.h"
+#endif
+
 // common positions
 #define MENU_MARGIN_REGULAR 40
 #define MENU_MARGIN_WIDE    32
@@ -58,6 +62,10 @@ static FORCE_INLINE void Menu_StartTextInput()
     SDL_StartTextInput();
 # endif
 #endif
+
+#ifdef __PSP2__
+    PSP2_StartTextInput("", 0);
+#endif
 }
 
 static FORCE_INLINE void Menu_StopTextInput()
@@ -68,6 +76,10 @@ static FORCE_INLINE void Menu_StopTextInput()
 # else
     SDL_StopTextInput();
 # endif
+#endif
+
+#ifdef __PSP2__
+    PSP2_StopTextInput();
 #endif
 }
 
