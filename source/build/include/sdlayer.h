@@ -23,7 +23,7 @@ HINSTANCE win_gethinstance(void);
 #include "sdlappicon.h"
 
 #ifdef __PSP2__
-void PSP2_StartTextInput(char *initial_text, int multiline);
+void PSP2_StartTextInput(char *initial_text);
 void PSP2_StopTextInput();
 #endif
 

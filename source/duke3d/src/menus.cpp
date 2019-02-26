@@ -37,6 +37,7 @@ droidinput_t droidinput;
 
 #ifdef __PSP2__
 #include "sdlayer.h"
+char initial_text[TYPEBUFSIZE + 1] = { 0 };
 #endif
 
 // common positions
@@ -64,7 +65,7 @@ static FORCE_INLINE void Menu_StartTextInput()
 #endif
 
 #ifdef __PSP2__
-    PSP2_StartTextInput("", 0);
+    PSP2_StartTextInput("");
 #endif
 }
 
@@ -3571,7 +3572,12 @@ static void Menu_Verify(int32_t input)
             save_xxh = 0;
 
             ((MenuString_t*)M_SAVE.entrylist[M_SAVE.currentEntry]->entry)->editfield = NULL;
+        } 
+#ifdef __PSP2__
+        else {
+            PSP2_StartTextInput(initial_text);
         }
+#endif
         break;
 
     case MENU_LOADDELVERIFY:
@@ -6136,7 +6142,19 @@ static void Menu_RunInput_EntryString_Activate(MenuEntry_t *entry)
         object->bufsize = TYPEBUFSIZE;
 
     Menu_EntryStringActivate(/*entry*/);
+#ifdef __PSP2__
+    if (typebuf[0] == 0) {
+        // new save game
+        PSP2_StartTextInput("");
+    }
+    else {
+        // overwriting existing save game
+        // so defer virtual keyboard appearance until after confirmation dialog, but remember filename
+        strncpy(initial_text, typebuf, TYPEBUFSIZE);
+    }
+#else
     Menu_StartTextInput();
+#endif
 }
 
 static void Menu_RunInput_EntryString_Submit(/*MenuEntry_t *entry, */MenuString_t *object)
@@ -6148,7 +6166,11 @@ static void Menu_RunInput_EntryString_Submit(/*MenuEntry_t *entry, */MenuString_
     }
 
     object->editfield = NULL;
+#ifdef __PSP2__
+    PSP2_StopTextInput();
+#else
     Menu_StopTextInput();
+#endif
 }
 
 static void Menu_RunInput_EntryString_Cancel(/*MenuEntry_t *entry, */MenuString_t *object)
@@ -6156,7 +6178,11 @@ static void Menu_RunInput_EntryString_Cancel(/*MenuEntry_t *entry, */MenuString_
     Menu_EntryStringCancel(/*entry*/);
 
     object->editfield = NULL;
+#ifdef __PSP2__
+    PSP2_StopTextInput();
+#else
     Menu_StopTextInput();
+#endif
 }
 
 static void Menu_RunInput_FileSelect_MovementVerify(MenuFileSelect_t *object)
