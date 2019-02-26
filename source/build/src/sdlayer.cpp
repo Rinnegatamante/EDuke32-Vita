@@ -2444,53 +2444,54 @@ int32_t handleevents(void)
 }
 
 #ifdef __PSP2__
-void PSP2_StartTextInput(char *initial_text, int multiline) {
+static void PSP2_CreateAndPushKeyEvent(SDLKey key_sym, Uint8 event_type) {
+    SDL_Event event;
+    event.type = event_type;
+    event.key.keysym.sym = key_sym;
+    event.key.keysym.unicode = key_sym;
+    event.key.keysym.mod = 0;
+    SDL_PushEvent(&event);
+}
+
+void PSP2_StartTextInput(char *initial_text) {
     if (!can_use_IME_keyboard)
-    return;
+        return;
     
     can_use_IME_keyboard = 0;
-    
-    char *text = kbdvita_get("Enter New Text:", initial_text, 600, multiline);
-    
+
+    char *text = kbdvita_get("Enter New Text:", initial_text, 16, 0);
+
+    // the build engine keyboard fifo buffer can only store 32 keys
+    int i = strlen(initial_text);
+    if (i > 32 - strlen(text))
+        i = 32 - strlen(text);
+
+    while (i > 0) {
+        // delete everything that might be there
+        PSP2_CreateAndPushKeyEvent(SDLK_BACKSPACE, SDL_KEYDOWN);
+        PSP2_CreateAndPushKeyEvent(SDLK_BACKSPACE, SDL_KEYUP);
+        i--;
+    }
+
     if (text != NULL)
     {
+        // enter the new text
         int i=0;
-        while (text[i]!=0 && i<600) {
+        while (text[i]!=0 && i<16) {
             if (text[i]>='A' && text[i]<='Z')
-            text[i]+=32;
+                text[i]+=32;
             // convert lf to return
             if (text[i]==10)
-            text[i]=SDLK_RETURN;
-            SDL_Event down_event;
-            down_event.type = SDL_KEYDOWN;
-            down_event.key.keysym.sym = text[i];
-            down_event.key.keysym.unicode = text[i];
-            down_event.key.keysym.mod = 0;
-            SDL_PushEvent(&down_event);
-            SDL_Event up_event;
-            up_event.type = SDL_KEYUP;
-            up_event.key.keysym.sym = text[i];
-            up_event.key.keysym.unicode = text[i];
-            up_event.key.keysym.mod = 0;
-            SDL_PushEvent(&up_event);
+                text[i]=SDLK_RETURN;
+            PSP2_CreateAndPushKeyEvent((SDLKey) text[i], SDL_KEYDOWN);
+            PSP2_CreateAndPushKeyEvent((SDLKey) text[i], SDL_KEYUP);
             i++;
         }
     }
-    // append return to single-line text entry
-    if (!multiline) {
-        SDL_Event down_event;
-        down_event.type = SDL_KEYDOWN;
-        down_event.key.keysym.sym = SDLK_RETURN;
-        down_event.key.keysym.unicode = SDLK_RETURN;
-        down_event.key.keysym.mod = 0;
-        SDL_PushEvent(&down_event);
-        SDL_Event up_event;
-        up_event.type = SDL_KEYUP;
-        up_event.key.keysym.sym = SDLK_RETURN;
-        up_event.key.keysym.unicode = SDLK_RETURN;
-        up_event.key.keysym.mod = 0;
-        SDL_PushEvent(&up_event);
-    }
+
+    // append return
+    PSP2_CreateAndPushKeyEvent(SDLK_RETURN, SDL_KEYDOWN);
+    PSP2_CreateAndPushKeyEvent(SDLK_RETURN, SDL_KEYUP);
 }
 
 void PSP2_StopTextInput() {
