@@ -665,7 +665,9 @@ endif
 ifeq ($(MIXERTYPE),SDL)
     duke3d_common_midi_objs := sdlmusic.cpp
 endif
-
+ifeq ($(PLATFORM),PSP2)
+    duke3d_common_midi_objs += audio_decoder.cpp audio_resampler.cpp decoder_fmmidi.cpp midisequencer.cpp midisynth.cpp
+endif
 
 #### Shadow Warrior
 

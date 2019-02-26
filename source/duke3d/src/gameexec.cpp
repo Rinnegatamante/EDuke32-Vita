@@ -5162,8 +5162,8 @@ GAMEEXEC_STATIC void VM_Execute(native_t loop)
                     uint32_t const array1 = *insptr++;
                     uint32_t const array2 = *insptr++;
 
-                    swap(&aGameArrays[array1].size, &aGameArrays[array2].size);
-                    swap(&aGameArrays[array1].pValues, &aGameArrays[array2].pValues);
+                    eduke_swap(&aGameArrays[array1].size, &aGameArrays[array2].size);
+                    eduke_swap(&aGameArrays[array1].pValues, &aGameArrays[array2].pValues);
 
                     continue;
                 }
