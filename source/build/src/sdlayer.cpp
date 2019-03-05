@@ -472,7 +472,9 @@ int scanForGRPFiles(vita2d_pgf *font) {
 	SceIoDirent g_dir;
 	SceUID d = sceIoDopen("ux0:data/EDuke32");
 	while (sceIoDread(d, &g_dir) > 0) {
-		if (strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".grp") == 0) {
+		if (strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".grp") == 0) ||
+			(strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".ssi") == 0)
+		{
 			strcpy(grp_files[num_grp_files].name, g_dir.d_name);
 			grp_files[num_grp_files].x = get_x_text(font, g_dir.d_name);
 			num_grp_files++;
