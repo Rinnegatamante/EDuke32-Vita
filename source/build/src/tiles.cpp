@@ -556,7 +556,7 @@ int32_t artLoadFiles(const char *filename, int32_t askedsize)
     Bmemset(gotpic, 0, sizeof(gotpic));
 
 #ifdef __PSP2__
-	cachesize = 40 * 1024 * 1024;
+    cachesize = askedsize < 200 * 1024 * 1024 ? askedsize : 200 * 1024 * 1024;
 #else
     //cachesize = min((int32_t)((Bgetsysmemsize()/100)*60),max(artsize,askedsize));
     cachesize = (Bgetsysmemsize() <= (uint32_t)askedsize) ? (int32_t)((Bgetsysmemsize() / 100) * 60) : askedsize;
