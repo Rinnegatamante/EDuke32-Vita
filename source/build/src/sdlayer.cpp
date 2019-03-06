@@ -472,8 +472,9 @@ int scanForGRPFiles(vita2d_pgf *font) {
 	SceIoDirent g_dir;
 	SceUID d = sceIoDopen("ux0:data/EDuke32");
 	while (sceIoDread(d, &g_dir) > 0) {
-		if (strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".grp") == 0) ||
-			(strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".ssi") == 0)
+		if ((strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".grp") == 0) ||
+			(strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".ssi") == 0) ||
+			(strcasecmp(&g_dir.d_name[strlen(g_dir.d_name) - 4], ".bat") == 0))
 		{
 			strcpy(grp_files[num_grp_files].name, g_dir.d_name);
 			grp_files[num_grp_files].x = get_x_text(font, g_dir.d_name);
@@ -556,7 +557,11 @@ int psp2_main(unsigned int argc, void *argv) {
             vita2d_pgf_draw_text(font, intro[z].x, intro[z].y, *intro[z].color, 1.0, intro[z].text);
         }
 		for (z=0;z<num_grp_files;z++) {
-			vita2d_pgf_draw_text(font, grp_files[z].x, 200 + z * 20, k == z ? yellow : white, 1.0, grp_files[z].name);
+			int y = 200 + z * 20;
+			if (k > 5) y -= 20 * (k - 5);
+			if (y <= 400 && y >= 200) {
+				vita2d_pgf_draw_text(font, grp_files[z].x, y, k == z ? yellow : white, 1.0, grp_files[z].name);
+			}
 		}
         vita2d_end_drawing();
         vita2d_wait_rendering_done();
@@ -567,7 +572,21 @@ int psp2_main(unsigned int argc, void *argv) {
 			k--;
 			if (k < 0) k = num_grp_files - 1;
 		} else if ((pad.buttons & SCE_CTRL_CONFIRM) && (!(oldpad & SCE_CTRL_CONFIRM))) {
-			int_argv[2] = grp_files[k].name;
+			if (strcasecmp(&grp_files[k].name[strlen(grp_files[k].name) - 4], ".bat") == 0) {
+				char fname[512];
+				sprintf(fname, "ux0:data/EDuke32/%s", grp_files[k].name);
+				SceUID fd = sceIoOpen(fname, SCE_O_RDONLY, 0777);
+				int fsize = sceIoLseek(fd, 0, SEEK_END);
+				sceIoLseek(fd, 0, SEEK_SET);
+				char *content = (char*)malloc(fsize + 1);
+				sceIoRead(fd, content, fsize);
+				content[fsize] = 0;
+				sceIoClose(fd);
+				sprintf(title_keyboard, "%s", (char*)(strstr(content, "eduke32") + 8));
+				free(content);
+			} else {
+				int_argv[2] = grp_files[k].name;
+			}
 			break;
 		} else if ((pad.buttons & SCE_CTRL_START) && (!(oldpad & SCE_CTRL_START))) {
 			memset(input_text, 0, (SCE_IME_DIALOG_MAX_TEXT_LENGTH + 1) << 1);
