@@ -449,13 +449,13 @@ typedef struct credits_voice{
 #define INTRO_VOICES 7
 
 credits_voice intro[INTRO_VOICES] = {
-    {0, 100, &yellow, "EDuke32 Vita v.1.5.1"},
+    {0, 100, &yellow, "EDuke32 Vita v.1.6"},
     {0, 120, &white,  "Port by Rinnegatamante"},
     {0, 180, &yellow, "Select a GRP file to launch:"},
 	{0, 440, &green,  "Press START to insert custom launch args"},
     {0, 480, &yellow, "Thanks to my distinguished Patroners:"},
-    {0, 500, &white,  "RaveHeart"},
-    {0, 520, &white,  "Tain Sueiras"},
+    {0, 500, &white,  "RaveHeart - drd70f14 - Polytoad"},
+    {0, 520, &white,  "Tain Sueiras - TheVita3K Project"},
 };
 
 typedef struct grp_info {
