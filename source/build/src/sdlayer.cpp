@@ -53,13 +53,13 @@ int _newlib_heap_size_user = 300 * 1024 * 1024;
 #define MAX_CURDIR_PATH 512
 char cur_dir[MAX_CURDIR_PATH] = "ux0:data/EDuke32/";
 int can_use_IME_keyboard = 1;
-char *getcwd(char *buf, size_t size) {
+extern "C" char *__wrap_getcwd(char *buf, size_t size) {
     if (buf != NULL) {
         strncpy(buf, cur_dir, size);
     }
     return cur_dir;
 }
-int chdir(const char *path) {
+extern "C" int __wrap_chdir(const char *path) {
     return 0;
 }
 #endif
